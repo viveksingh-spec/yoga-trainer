@@ -87,323 +87,154 @@ POSE_ANGLE_DEFINITIONS: Dict[str, PoseAngleConfig] = {
                 tolerance=25.0,
                 weight=2.0
             ),
-            # AngleDefinition(
-            #     name="Hips Level",
-            #     points=("left_hip", "right_hip", "right_knee"),
-            #     target_angle=180.0,  # Hips should be level
-            #     tolerance=10.0,
-            #     weight=1.5
-            # ),
-            # AngleDefinition(
-            #     name="Arms (Left Elbow)",
-            #     points=("left_shoulder", "left_elbow", "left_wrist"),
-            #     target_angle=90.0,  # Prayer hands position
-            #     tolerance=30.0,
-            #     weight=1.0
-            # ),
-            # AngleDefinition(
-            #     name="Arms (Right Elbow)",
-            #     points=("right_shoulder", "right_elbow", "right_wrist"),
-            #     target_angle=90.0,
-            #     tolerance=30.0,
-            #     weight=1.0
-            # ),
+          
         ]
     ),
-    
-    # Tree Pose (Side View)
-    "Tree_Pose_or_Vrksasana__side": PoseAngleConfig(
-        pose_name="Tree_Pose_or_Vrksasana_",
+
+     "Boat_Pose_or_Paripurna_Navasana__side": PoseAngleConfig(
+        pose_name="Boat_Pose_or_Paripurna_Navasana_",
         view="side",
         required_keypoints=[
-            "nose", "left_shoulder", "left_elbow", "left_wrist",
-            "left_hip", "left_knee", "left_ankle"
+            "nose",
+            "left_shoulder",
+            "right_shoulder",
+            "left_elbow",
+            "right_elbow",
+            "left_wrist",
+            "right_wrist",
+            "left_hip",
+            "right_hip",
+            "left_knee",
+            "right_knee",
+            "left_ankle",
+            "right_ankle"
+        ],
+        required_connections=[
+            ConnectionDefinition(
+                name="Left hand holds right foot",
+                point1="left_wrist",
+                point2="right_ankle",
+                max_distance=0.35,  # 15% of normalized space
+                weight=2.0
+            ),
+            ConnectionDefinition(
+                name="Right hand holds left foot",
+                point1="right_wrist",
+                point2="left_ankle",
+                max_distance=0.35,
+                weight=2.0
+            )
         ],
         required_angles=[
             AngleDefinition(
-                name="Body Alignment",
-                points=("left_shoulder", "left_hip", "left_ankle"),
-                target_angle=180.0,  # Straight vertical line
-                tolerance=10.0,
-                weight=3.0
-            ),
-            AngleDefinition(
-                name="Hip Angle",
-                points=("left_shoulder", "left_hip", "left_knee"),
-                target_angle=160.0,  # Slight backward lean
-                tolerance=15.0,
+                name="left hand",
+                points=("left_shoulder", "left_elbow", "left_wrist"),
+                target_angle=175.8,
+                tolerance=25.0,
                 weight=2.0
             ),
             AngleDefinition(
-                name="Standing Leg",
+                name="left leg",
                 points=("left_hip", "left_knee", "left_ankle"),
-                target_angle=180.0,  # Straight leg
-                tolerance=5.0,
-                weight=2.5
-            ),
-        ]
-    ),
-    
-    # Warrior I Pose (Front View)
-    "Warrior_I_Pose_or_Virabhadrasana_I__front": PoseAngleConfig(
-        pose_name="Warrior_I_Pose_or_Virabhadrasana_I_",
-        view="front",
-        required_keypoints=[
-            "left_shoulder", "right_shoulder",
-            "left_elbow", "right_elbow",
-            "left_wrist", "right_wrist",
-            "left_hip", "right_hip",
-            "left_knee", "right_knee",
-            "left_ankle", "right_ankle"
-        ],
-        required_angles=[
-            AngleDefinition(
-                name="Front Knee (Left)",
-                points=("left_hip", "left_knee", "left_ankle"),
-                target_angle=90.0,  # Bent at 90 degrees
-                tolerance=15.0,
-                weight=3.0  # Most important
+                target_angle=179.7,
+                tolerance=25.0,
+                weight=4.0
             ),
             AngleDefinition(
-                name="Back Leg (Right)",
+                name="right leg",
                 points=("right_hip", "right_knee", "right_ankle"),
-                target_angle=180.0,  # Straight
-                tolerance=10.0,
-                weight=2.5
+                target_angle=179.8,
+                tolerance=25.0,
+                weight=4.0
             ),
             AngleDefinition(
-                name="Left Arm Raised",
-                points=("left_shoulder", "left_elbow", "left_wrist"),
-                target_angle=180.0,  # Straight arm up
-                tolerance=10.0,
-                weight=1.5
-            ),
-            AngleDefinition(
-                name="Right Arm Raised",
+                name="right hand",
                 points=("right_shoulder", "right_elbow", "right_wrist"),
-                target_angle=180.0,
-                tolerance=10.0,
-                weight=1.5
-            ),
-            AngleDefinition(
-                name="Shoulders Level",
-                points=("left_shoulder", "left_hip", "right_shoulder"),
-                target_angle=180.0,
-                tolerance=10.0,
-                weight=1.5
-            ),
-            AngleDefinition(
-                name="Arms Overhead (Left)",
-                points=("left_elbow", "left_shoulder", "left_hip"),
-                target_angle=180.0,  # Arms straight overhead
-                tolerance=15.0,
+                target_angle=169.2,
+                tolerance=25.0,
                 weight=2.0
             ),
             AngleDefinition(
-                name="Arms Overhead (Right)",
-                points=("right_elbow", "right_shoulder", "right_hip"),
-                target_angle=180.0,
-                tolerance=15.0,
-                weight=2.0
-            ),
-        ]
-    ),
-    
-    # Warrior I Pose (Side View)
-    "Warrior_I_Pose_or_Virabhadrasana_I__side": PoseAngleConfig(
-        pose_name="Warrior_I_Pose_or_Virabhadrasana_I_",
-        view="side",
-        required_keypoints=[
-            "nose", "left_shoulder", "left_elbow", "left_wrist",
-            "left_hip", "left_knee", "left_ankle"
-        ],
-        required_angles=[
-            AngleDefinition(
-                name="Front Knee",
-                points=("left_hip", "left_knee", "left_ankle"),
-                target_angle=90.0,
-                tolerance=15.0,
-                weight=3.0  # Critical
-            ),
-            AngleDefinition(
-                name="Torso Upright",
+                name="left hip (torso to leg)",
                 points=("left_shoulder", "left_hip", "left_knee"),
-                target_angle=160.0,  # Slight forward lean
-                tolerance=15.0,
-                weight=2.5
-            ),
-            AngleDefinition(
-                name="Arm Overhead",
-                points=("left_elbow", "left_shoulder", "left_hip"),
-                target_angle=180.0,  # Arms vertical
-                tolerance=15.0,
-                weight=2.0
-            ),
-            AngleDefinition(
-                name="Arm Straight",
-                points=("left_shoulder", "left_elbow", "left_wrist"),
-                target_angle=180.0,
-                tolerance=10.0,
-                weight=1.5
+                target_angle=83.5,
+                tolerance=25.0,
+                weight=5.0
             ),
         ]
     ),
-    
-    # Downward-Facing Dog (Side View)
-    "Downward-Facing_Dog_pose_or_Adho_Mukha_Svanasana__side": PoseAngleConfig(
-        pose_name="Downward-Facing_Dog_pose_or_Adho_Mukha_Svanasana_",
-        view="side",
-        required_keypoints=[
-            "left_wrist", "left_elbow", "left_shoulder",
-            "left_hip", "left_knee", "left_ankle"
-        ],
-        required_angles=[
-            AngleDefinition(
-                name="Inverted V (Shoulder Angle)",
-                points=("left_wrist", "left_shoulder", "left_hip"),
-                target_angle=90.0,  # Forms inverted V
-                tolerance=15.0,
-                weight=3.0
-            ),
-            AngleDefinition(
-                name="Hip Angle",
-                points=("left_shoulder", "left_hip", "left_knee"),
-                target_angle=90.0,
-                tolerance=15.0,
-                weight=3.0
-            ),
-            AngleDefinition(
-                name="Arm Straight",
-                points=("left_wrist", "left_elbow", "left_shoulder"),
-                target_angle=180.0,
-                tolerance=10.0,
-                weight=2.0
-            ),
-            AngleDefinition(
-                name="Leg Straight",
-                points=("left_hip", "left_knee", "left_ankle"),
-                target_angle=180.0,
-                tolerance=10.0,
-                weight=2.0
-            ),
-        ]
-    ),
-    
-    # Plank Pose (Side View)
-    "Plank_Pose_or_Kumbhakasana__side": PoseAngleConfig(
-        pose_name="Plank_Pose_or_Kumbhakasana_",
-        view="side",
-        required_keypoints=[
-            "nose", "left_shoulder", "left_elbow", "left_wrist",
-            "left_hip", "left_knee", "left_ankle"
-        ],
-        required_angles=[
-            AngleDefinition(
-                name="Body Straight Line",
-                points=("left_shoulder", "left_hip", "left_ankle"),
-                target_angle=180.0,  # Perfect straight line
-                tolerance=5.0,
-                weight=3.5  # Most critical
-            ),
-            AngleDefinition(
-                name="Arm Position",
-                points=("left_wrist", "left_elbow", "left_shoulder"),
-                target_angle=180.0,  # Straight arms
-                tolerance=10.0,
-                weight=2.0
-            ),
-            AngleDefinition(
-                name="Shoulder Over Wrists",
-                points=("left_wrist", "left_shoulder", "left_hip"),
-                target_angle=90.0,
-                tolerance=10.0,
-                weight=2.0
-            ),
-            AngleDefinition(
-                name="Leg Straight",
-                points=("left_hip", "left_knee", "left_ankle"),
-                target_angle=180.0,
-                tolerance=5.0,
-                weight=1.5
-            ),
-        ]
-    ),
-    
-    # Mountain Pose (Front View)
-    "Mountain_Pose_or_Tadasana__front": PoseAngleConfig(
-        pose_name="Mountain_Pose_or_Tadasana_",
+
+
+
+
+
+    # Bound_Angle_Pose_or_Baddha_Konasana__front (Front View)
+    "Bound_Angle_Pose_or_Baddha_Konasana__front": PoseAngleConfig(
+        pose_name="Bound_Angle_Pose_or_Baddha_Konasana_",
         view="front",
         required_keypoints=[
-            "nose", "left_shoulder", "right_shoulder",
-            "left_hip", "right_hip",
-            "left_knee", "right_knee",
-            "left_ankle", "right_ankle"
+            "nose",
+            "left_shoulder",
+            "right_shoulder",
+            "left_elbow",
+            "right_elbow",
+            "left_wrist",
+            "right_wrist",
+            "left_hip",
+            "right_hip",
+            "left_knee",
+            "right_knee",
+            "left_ankle",
+            "right_ankle"
+        ],
+        required_connections=[
+            ConnectionDefinition(
+                name="Left hand holds right foot",
+                point1="left_wrist",
+                point2="left_ankle",
+                max_distance=0.35,  # 15% of normalized space
+                weight=2.0
+            ),
+            ConnectionDefinition(
+                name="Right hand holds left foot",
+                point1="right_wrist",
+                point2="right_ankle",
+                max_distance=0.35,
+                weight=2.0
+            )
         ],
         required_angles=[
             AngleDefinition(
-                name="Left Leg Straight",
-                points=("left_hip", "left_knee", "left_ankle"),
-                target_angle=180.0,
-                tolerance=5.0,
-                weight=2.5
+                name="right hand",
+                points=("right_shoulder", "right_elbow", "right_wrist"),
+                target_angle=175.4,
+                tolerance=20.0,
+                weight=2.0
             ),
             AngleDefinition(
-                name="Right Leg Straight",
+                name="left hand",
+                points=("left_shoulder", "left_elbow", "left_wrist"),
+                target_angle=178.4,
+                tolerance=20.0,
+                weight=2.0
+            ),
+            AngleDefinition(
+                name="right leg",
                 points=("right_hip", "right_knee", "right_ankle"),
-                target_angle=180.0,
-                tolerance=5.0,
-                weight=2.5
+                target_angle=16.9,
+                tolerance=25.0,
+                weight=4.0
             ),
             AngleDefinition(
-                name="Shoulders Level",
-                points=("left_shoulder", "left_hip", "right_shoulder"),
-                target_angle=180.0,
-                tolerance=5.0,
-                weight=2.0
-            ),
-            AngleDefinition(
-                name="Hips Level",
-                points=("left_hip", "right_hip", "right_knee"),
-                target_angle=180.0,
-                tolerance=5.0,
-                weight=2.0
-            ),
-        ]
-    ),
-    
-    # Child's Pose (Side View)
-    "Child_Pose_or_Balasana__side": PoseAngleConfig(
-        pose_name="Child_Pose_or_Balasana_",
-        view="side",
-        required_keypoints=[
-            "nose", "left_shoulder", "left_elbow", "left_wrist",
-            "left_hip", "left_knee", "left_ankle"
-        ],
-        required_angles=[
-            AngleDefinition(
-                name="Hip Flexion",
-                points=("left_shoulder", "left_hip", "left_knee"),
-                target_angle=45.0,  # Deep fold
-                tolerance=15.0,
-                weight=3.0
-            ),
-            AngleDefinition(
-                name="Knee Bend",
+                name="left leg",
                 points=("left_hip", "left_knee", "left_ankle"),
-                target_angle=45.0,  # Sitting on heels
-                tolerance=20.0,
-                weight=2.5
-            ),
-            AngleDefinition(
-                name="Arms Extended",
-                points=("left_wrist", "left_shoulder", "left_hip"),
-                target_angle=30.0,  # Arms reaching forward
-                tolerance=20.0,
-                weight=1.5
+                target_angle=13.2,
+                tolerance=25.0,
+                weight=4.0
             ),
         ]
     ),
-    
+
 }
 
 
@@ -420,8 +251,11 @@ def get_pose_config(pose_id: str) -> PoseAngleConfig:
     Raises:
         ValueError: If pose configuration not found
     """
-    if pose_id not in POSE_ANGLE_DEFINITIONS:
-        raise ValueError(f"No angle configuration found for pose: {pose_id}")
+    # if pose_id not in POSE_ANGLE_DEFINITIONS:
+    #     raise ValueError(f"No angle configuration found for pose: {pose_id
+    # Boat_Pose_or_Paripurna_Navasana__image_192 (Side View)
+   
+    
     return POSE_ANGLE_DEFINITIONS[pose_id]
 
 
