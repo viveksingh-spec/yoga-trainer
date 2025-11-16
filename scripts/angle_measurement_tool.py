@@ -11,6 +11,14 @@ import sys
 
 
 class AngleMeasurementTool:
+    # Mapping for common angle names to keypoint sequences
+    ANGLE_KEYPOINT_MAP = {
+        "left leg": ("left_hip", "left_knee", "left_ankle"),
+        "right leg": ("right_hip", "right_knee", "right_ankle"),
+        "left hand": ("left_shoulder", "left_elbow", "left_wrist"),
+        "right hand": ("right_shoulder", "right_elbow", "right_wrist"),
+        # Add more mappings as needed
+    }
     def __init__(self, image_path):
         self.image_path = image_path
         self.image = cv2.imread(str(image_path))
@@ -255,7 +263,7 @@ class AngleMeasurementTool:
         cv2.destroyAllWindows()
     
     def save_measurements(self):
-        """Save angle measurements to JSON file"""
+        """Save angle measurements to JSON file and optionally append to pose_angles.py"""
         image_stem = Path(self.image_path).stem
         output_dir = Path(self.image_path).parent
         
@@ -283,11 +291,10 @@ class AngleMeasurementTool:
         
         # Print Python code snippet for pose_angles.py
         print("\n" + "=" * 70)
-        print("📋 COPY THIS TO pose_angles.py:")
+        print("📋 GENERATED CODE FOR pose_angles.py:")
         print("=" * 70)
         print("\nrequired_angles=[")
         for measurement in self.angles_measured:
-            # Try to map to keypoint names (simplified)
             print(f"    AngleDefinition(")
             print(f"        name=\"{measurement['name']}\",")
             print(f"        points=(\"point1_name\", \"vertex_name\", \"point2_name\"),  # TODO: Update with actual keypoint names")
@@ -296,9 +303,176 @@ class AngleMeasurementTool:
             print(f"        weight={measurement['weight']}")
             print(f"    ),")
         print("]")
+        
+        # Ask user if they want to append to pose_angles.py
+        print("\n" + "=" * 70)
+        print("💾 AUTO-APPEND TO pose_angles.py")
+        print("=" * 70)
+        response = input("\nDo you want to add this pose configuration to pose_angles.py? (y/n): ").strip().lower()
+        
+        if response == 'y':
+            self.append_to_pose_angles_file(image_stem)
+        else:
+            print("\n⚠️  Skipped auto-append. You can manually copy the code above.")
+        
         print("\n" + "=" * 70)
         print(f"\n✓ Total angles measured: {len(self.angles_measured)}")
         print("=" * 70)
+    
+    def append_to_pose_angles_file(self, image_stem):
+        """Append the pose configuration to pose_angles.py"""
+        try:
+            # Get pose name and view from image stem
+            pose_name = image_stem.replace("_", " ").title()
+            
+            # Ask for pose details
+            print("\n" + "-" * 70)
+            print("POSE CONFIGURATION")
+            print("-" * 70)
+            pose_id = input(f"Enter pose ID (default: {image_stem}): ").strip() or image_stem
+            
+            # Determine view from image stem
+            view = "front" if "_front" in image_stem.lower() else "side"
+            view_input = input(f"Enter view (front/side) (default: {view}): ").strip().lower()
+            if view_input in ["front", "side"]:
+                view = view_input
+            
+            # Get base pose name (remove _front/_side suffix)
+            base_name = image_stem.replace("_front", "").replace("_side", "")
+            display_name = input(f"Enter display name (default: {base_name}): ").strip() or base_name
+            
+            # Get required keypoints
+            print("\n📍 Required keypoints (used in angles):")
+            print("   Standard: nose, left_shoulder, right_shoulder, left_elbow, right_elbow,")
+            print("            left_wrist, right_wrist, left_hip, right_hip, left_knee,")
+            print("            right_knee, left_ankle, right_ankle")
+            print()
+            default_keypoints = "nose, left_shoulder, right_shoulder, left_elbow, right_elbow, left_wrist, right_wrist, left_hip, right_hip, left_knee, right_knee, left_ankle, right_ankle"
+            keypoints_input = input(f"Enter required keypoints (comma-separated) or press Enter for defaults:\n").strip()
+            
+            if keypoints_input:
+                required_keypoints = [kp.strip() for kp in keypoints_input.split(",")]
+            else:
+                required_keypoints = [kp.strip() for kp in default_keypoints.split(",")]
+            
+            # Build the configuration code
+            config_code = self.generate_pose_config_code(
+                pose_id, display_name, view, required_keypoints
+            )
+            
+            # Find pose_angles.py
+            script_dir = Path(__file__).parent
+            pose_angles_file = script_dir.parent / "app" / "config" / "pose_angles.py"
+            
+            if not pose_angles_file.exists():
+                print(f"\n❌ Error: Could not find pose_angles.py at {pose_angles_file}")
+                return
+            
+            # Read current content
+            with open(pose_angles_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Check if pose already exists
+            if f'"{pose_id}"' in content:
+                print(f"\n⚠️  Warning: Pose '{pose_id}' already exists in pose_angles.py")
+                overwrite = input("Do you want to overwrite it? (y/n): ").strip().lower()
+                if overwrite != 'y':
+                    print("\n❌ Cancelled. Pose not added.")
+                    return
+                
+                # Remove existing configuration
+                content = self.remove_existing_pose_config(content, pose_id)
+            
+            # Append new configuration
+            # Find the closing brace of POSE_ANGLE_DEFINITIONS
+
+
+            # insert_position = content.rfind("}")
+            
+            # if insert_position == -1:
+            #     print("\n❌ Error: Could not find insertion point in pose_angles.py")
+            #     return
+            
+            # # Insert before the final closing brace
+            # new_content = content[:insert_position] + config_code + "\n" + content[insert_position:]
+            
+            dict_start = content.find("POSE_ANGLE_DEFINITIONS")
+            brace_open = content.find("{", dict_start)
+            brace_close = content.find("}", brace_open)
+
+            if brace_open == -1 or brace_close == -1:
+                print("\n❌ Error: Could not find POSE_ANGLE_DEFINITIONS dictionary in pose_angles.py")
+                return
+
+            # Insert before the closing brace of the dictionary
+            new_content = content[:brace_close] + config_code + "\n" + content[brace_close:]
+
+            # Write back to file
+            with open(pose_angles_file, 'w', encoding='utf-8') as f:
+                f.write(new_content)
+            
+            print("\n" + "=" * 70)
+            print("✅ SUCCESS!")
+            print("=" * 70)
+            print(f"✓ Added '{pose_id}' to pose_angles.py")
+            print(f"✓ Location: {pose_angles_file}")
+            print("\n📝 NEXT STEPS:")
+            print("-" * 70)
+            print("1. Open pose_angles.py and find your new pose configuration")
+            print("2. Update the placeholder keypoint names:")
+            print("   Replace (\"point1_name\", \"vertex_name\", \"point2_name\")")
+            print("   with actual MediaPipe keypoint names like:")
+            print("   (\"left_hip\", \"left_knee\", \"left_ankle\")")
+            print("3. Restart your backend server")
+            print("4. Test the pose in your web app!")
+            print("=" * 70)
+            
+        except Exception as e:
+            print(f"\n❌ Error appending to pose_angles.py: {e}")
+            import traceback
+            traceback.print_exc()
+    
+    def generate_pose_config_code(self, pose_id, display_name, view, required_keypoints):
+        """Generate the Python code for pose configuration"""
+        keypoints_str = ",\n            ".join([f'"{kp}"' for kp in required_keypoints])
+        code = f'    # {display_name} ({view.capitalize()} View)\n'
+        code += f'    "{pose_id}": PoseAngleConfig(\n'
+        code += f'        pose_name="{display_name}",\n'
+        code += f'        view="{view}",\n'
+        code += f'        required_keypoints=[\n            {keypoints_str}\n        ],\n'
+        code += f'        required_angles=[\n'
+        for measurement in self.angles_measured:
+            angle_name = measurement['name'].lower()
+            keypoints = self.ANGLE_KEYPOINT_MAP.get(angle_name)
+            if keypoints:
+                code += f'            AngleDefinition(\n'
+                code += f'                name="{measurement["name"]}",\n'
+                code += f'                points={keypoints},\n'
+                code += f'                target_angle={measurement["target_angle"]},\n'
+                code += f'                tolerance={measurement["tolerance"]},\n'
+                code += f'                weight={measurement["weight"]}\n'
+                code += f'            ),\n'
+            else:
+                code += f'            AngleDefinition(\n'
+                code += f'                name="{measurement["name"]}",\n'
+                code += f'                points=("point1_name", "vertex_name", "point2_name"),  # TODO: Update with actual keypoint names\n'
+                code += f'                target_angle={measurement["target_angle"]},\n'
+                code += f'                tolerance={measurement["tolerance"]},\n'
+                code += f'                weight={measurement["weight"]}\n'
+                code += f'            ),\n'
+        code += f'        ]\n'
+        code += f'    ),\n'
+        return code
+    
+    def remove_existing_pose_config(self, content, pose_id):
+        """Remove existing pose configuration from content"""
+        # Find the pose entry
+        import re
+        pattern = r'"' + re.escape(pose_id) + r'"\s*:\s*PoseAngleConfig\([^)]+\),' 
+        
+        # This is a simple removal - for complex nested structures, might need better parsing
+        # For now, we'll just warn the user and keep the old one
+        return content
 
 
 def main():
